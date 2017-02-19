@@ -20,7 +20,7 @@ import { Http } from '@angular/http';
                     </div>
                 </div>
                 <div class="col-6">
-                    <value-section [currentValue]="currentValue" [currentKey]="currentKey" [currentDatabase]="currentDatabase"></value-section>
+                    <value-section [currentValue]="currentValue" [currentKey]="currentKey" [currentDatabase]="currentDatabase" [databaseKeys]="databaseKeys" (keyOrValueChange)="fetchDb($event)"></value-section>
                 </div>
             </div>
             <div>
@@ -36,7 +36,7 @@ export class AppComponent {
     visibleDatabase = 0;
     currentValue;
     currentKey;
-    currentDatabase;
+    currentDatabase = 0;
     textAreaValue;
     start;
     end;
@@ -45,9 +45,15 @@ export class AppComponent {
     }
 
     fetch() {
-        this.http.post('/getDbsAndKeys', {}).subscribe((data) => {
+        this.http.get('/getDbsAndKeys').subscribe((data) => {
             this.databases = data.json().keys;
             this.databaseKeys = Object.keys(this.databases);
+        });
+    }
+
+    fetchDb(dbIndex) {
+        this.http.get('/getDatabaseKeys?db=' + dbIndex).subscribe((data) => {
+            this.databases[dbIndex] = data.json().keys;
         });
     }
 
@@ -61,7 +67,7 @@ export class AppComponent {
 
     delete(key) {
         this.http.post('/removeRedisKey', {keys: [key]}).subscribe(()=>{
-            this.fetch();
+            this.fetchDb(this.currentDatabase);
         });
     }
 
@@ -81,17 +87,6 @@ export class AppComponent {
         this.http.post('/getRedisValue', {key: key, db: db}).subscribe((data)=>{
             this.currentValue = data.json().result;
         });
-    }
-
-    set() {
-        this.http.post('/setRedisValue', {key: this.currentKey, db: this.currentDatabase, value: JSON.stringify(this.textAreaValue)}).subscribe((data)=>{
-            this.currentValue = data.json().result;
-            this.textAreaValue = this.currentValue;
-        });
-    }
-
-    textAreaChange(event) {
-        this.textAreaValue = event.target.value;
     }
 
     checkSelection(key, db) {

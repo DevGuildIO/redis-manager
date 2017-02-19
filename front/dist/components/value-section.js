@@ -14,18 +14,27 @@ var http_1 = require("@angular/http");
 var ValueSection = (function () {
     function ValueSection(http) {
         this.http = http;
+        this.keyOrValueChange = new core_1.EventEmitter();
+        this.newKeyDB = 0;
     }
-    ValueSection.prototype.set = function () {
+    ValueSection.prototype.set = function (key, value, db) {
         var _this = this;
-        this.http.post('/setRedisValue', { key: this.currentKey, db: this.currentDatabase, value: JSON.stringify(this.textAreaValue) }).subscribe(function (data) {
-            _this.currentValue = data.json().result;
+        value = JSON.stringify(value);
+        this.http.post('/setRedisValue', { key: key, value: value, db: db }).subscribe(function (data) {
+            if (key === 'newKey')
+                _this.newKey = '';
+            _this.keyOrValueChange.emit(db);
         });
     };
-    ValueSection.prototype.textAreaChange = function (event) {
-        this.textAreaValue = event.target.value;
+    ValueSection.prototype.textAreaChange = function (event, key) {
+        this[key] = event.target.value;
     };
     return ValueSection;
 }());
+__decorate([
+    core_1.Input('databaseKeys'),
+    __metadata("design:type", Object)
+], ValueSection.prototype, "databaseKeys", void 0);
 __decorate([
     core_1.Input('currentValue'),
     __metadata("design:type", Object)
@@ -38,10 +47,14 @@ __decorate([
     core_1.Input('currentDatabase'),
     __metadata("design:type", Object)
 ], ValueSection.prototype, "currentDatabase", void 0);
+__decorate([
+    core_1.Output('keyOrValueChange'),
+    __metadata("design:type", Object)
+], ValueSection.prototype, "keyOrValueChange", void 0);
 ValueSection = __decorate([
     core_1.Component({
         selector: 'value-section',
-        template: "\n\t\t<div>\n\t\t\t<textarea rows=\"10\" cols=\"40\" value=\"{{currentValue}}\" (change)=\"textAreaChange($event)\"></textarea>\n\t\t</div>\n\t\t<div>\n\t\t\t<button style=\"float: right;\" type=\"button\" class=\"btn btn-primary\" (click)=\"set()\">Save</button>\n\t\t</div>\n\t"
+        template: "\n        <div class=\"row\">\n            <button *ngIf=\"!setNewKey\" style=\"float: right;\" type=\"button\" class=\"btn btn-primary\" (click)=\"setNewKey = true;\">Create new Key</button>\n            <button *ngIf=\"setNewKey\" style=\"float: right;\" type=\"button\" class=\"btn btn-primary\" (click)=\"setNewKey = false;\">Hide</button>\n        </div>\n        <div class=\"row\">\n            <div *ngIf=\"setNewKey\">\n                <div>\n                    <label>Key:</label><input type=\"text\" [(ngModel)]=\"newKey\" name=\"key\">\n                    <label>Database</label>\n                    <select [(ngModel)]=\"newKeyDB\">\n                        <option *ngFor=\"let index of databaseKeys\">{{index}}</option>\n                    </select>\n                </div>\n                <label>Value:</label>\n                <textarea rows=\"10\" cols=\"40\" (change)=\"textAreaChange($event, 'newValue')\"></textarea>\n                <button style=\"float: right;\" type=\"button\" class=\"btn btn-primary\" (click)=\"set(newKey, newValue, newKeyDB)\">Save</button>\n            </div>\n        </div>\n\t\t<div class=\"row\">\n            <label>Key:</label>\n            <p>{{currentKey}}</p>\n\t\t\t<textarea rows=\"10\" cols=\"40\" value=\"{{currentValue}}\" (change)=\"textAreaChange($event, 'changeValue')\"></textarea>\n\t\t</div>\n\t\t<div>\n\t\t\t<button style=\"float: right;\" type=\"button\" class=\"btn btn-primary\" (click)=\"set(currentKey, changeValue, currentDatabase)\">Save</button>\n\t\t</div>\n\t"
     }),
     __metadata("design:paramtypes", [http_1.Http])
 ], ValueSection);

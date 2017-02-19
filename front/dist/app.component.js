@@ -14,13 +14,20 @@ var AppComponent = (function () {
     function AppComponent(http) {
         this.http = http;
         this.visibleDatabase = 0;
+        this.currentDatabase = 0;
         this.fetch();
     }
     AppComponent.prototype.fetch = function () {
         var _this = this;
-        this.http.post('/getDbsAndKeys', {}).subscribe(function (data) {
+        this.http.get('/getDbsAndKeys').subscribe(function (data) {
             _this.databases = data.json().keys;
             _this.databaseKeys = Object.keys(_this.databases);
+        });
+    };
+    AppComponent.prototype.fetchDb = function (dbIndex) {
+        var _this = this;
+        this.http.get('/getDatabaseKeys?db=' + dbIndex).subscribe(function (data) {
+            _this.databases[dbIndex] = data.json().keys;
         });
     };
     AppComponent.prototype.toggle = function (index) {
@@ -33,7 +40,7 @@ var AppComponent = (function () {
     AppComponent.prototype.delete = function (key) {
         var _this = this;
         this.http.post('/removeRedisKey', { keys: [key] }).subscribe(function () {
-            _this.fetch();
+            _this.fetchDb(_this.currentDatabase);
         });
     };
     AppComponent.prototype.deleteAll = function () {
@@ -54,16 +61,6 @@ var AppComponent = (function () {
             _this.currentValue = data.json().result;
         });
     };
-    AppComponent.prototype.set = function () {
-        var _this = this;
-        this.http.post('/setRedisValue', { key: this.currentKey, db: this.currentDatabase, value: JSON.stringify(this.textAreaValue) }).subscribe(function (data) {
-            _this.currentValue = data.json().result;
-            _this.textAreaValue = _this.currentValue;
-        });
-    };
-    AppComponent.prototype.textAreaChange = function (event) {
-        this.textAreaValue = event.target.value;
-    };
     AppComponent.prototype.checkSelection = function (key, db) {
         var start = this.databases[db].indexOf(this.currentKey);
         var end = this.databases[db].indexOf(key);
@@ -82,7 +79,7 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     core_1.Component({
         selector: 'my-app',
-        template: "\n        <div class=\"container\">\n            <div class=\"row\">\n                <div class=\"col-6\">\n                    <div *ngFor=\"let database of databaseKeys; let i = index;\">\n                        <span (click)=\"toggle(i)\">{{i}} [{{databases[database].length}}]</span>\n                        <div *ngIf=\"visibleDatabase === i\">\n                            <div *ngFor=\"let key of databases[database]\">\n                                <div class=\"key-row\">\n                                    <button (click)=\"get(key, i, $event)\" type=\"button\" class=\"btn btn-link\">{{key}}</button>\n                                    <button style=\"float: right;\" type=\"button\" class=\"btn btn-danger\" (click)=\"delete(key)\">Delete</button>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"col-6\">\n                    <value-section [currentValue]=\"currentValue\" [currentKey]=\"currentKey\" [currentDatabase]=\"currentDatabase\"></value-section>\n                </div>\n            </div>\n            <div>\n                <button type=\"button\" class=\"btn btn-danger\" (click)=\"deleteAll()\">Delete Selected</button>\n            </div>\n        </div>\n    ",
+        template: "\n        <div class=\"container\">\n            <div class=\"row\">\n                <div class=\"col-6\">\n                    <div *ngFor=\"let database of databaseKeys; let i = index;\">\n                        <span (click)=\"toggle(i)\">{{i}} [{{databases[database].length}}]</span>\n                        <div *ngIf=\"visibleDatabase === i\">\n                            <div *ngFor=\"let key of databases[database]\">\n                                <div class=\"key-row\">\n                                    <button (click)=\"get(key, i, $event)\" type=\"button\" class=\"btn btn-link\">{{key}}</button>\n                                    <button style=\"float: right;\" type=\"button\" class=\"btn btn-danger\" (click)=\"delete(key)\">Delete</button>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <div class=\"col-6\">\n                    <value-section [currentValue]=\"currentValue\" [currentKey]=\"currentKey\" [currentDatabase]=\"currentDatabase\" [databaseKeys]=\"databaseKeys\" (keyOrValueChange)=\"fetchDb($event)\"></value-section>\n                </div>\n            </div>\n            <div>\n                <button type=\"button\" class=\"btn btn-danger\" (click)=\"deleteAll()\">Delete Selected</button>\n            </div>\n        </div>\n    ",
         styles: ['.row, .key-row { padding-top: 5px; }']
     }),
     __metadata("design:paramtypes", [http_1.Http])

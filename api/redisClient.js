@@ -18,6 +18,7 @@ const getDbs = ()=>{
 }
 
 class RedisClient {
+
     getDbsAndKeys(req, res) {
         getDbs().then((databases)=>{
             let promises = [];
@@ -36,6 +37,15 @@ class RedisClient {
             Promise.all(promises).then(() => {
                 res.send({keys: dbKeys});
             });
+        });
+    }
+
+    getDatabaseKeys(req, res) {
+        let db = req.query.db || 0;
+        let currentClient = redis.createClient(port, host, {db: db});
+        currentClient.keys('*', (err, replies) => {
+            res.send({keys: replies});
+            currentClient.quit();
         });
     }
 

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule, JsonpModule } from '@angular/http';
+import { FormsModule }   from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { ValueSection } from './components/value-section';
@@ -8,7 +9,8 @@ import { ValueSection } from './components/value-section';
 @NgModule({
     imports: [
         BrowserModule,
-        HttpModule
+        HttpModule,
+        FormsModule
     ],
     declarations: [
         AppComponent,
