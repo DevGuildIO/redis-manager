@@ -20,7 +20,7 @@ import { Http } from '@angular/http';
                     </div>
                 </div>
                 <div class="col-6">
-                    <value-section [currentValue]="currentValue" [currentKey]="currentKey" [currentDatabase]="currentDatabase" [databaseKeys]="databaseKeys" (keyOrValueChange)="fetchDb($event)"></value-section>
+                    <value-section [currentValue]="currentValue" [currentKey]="currentKey" [currentDatabase]="visibleDatabase" [databaseKeys]="databaseKeys" (keyOrValueChange)="fetchDb($event)"></value-section>
                 </div>
             </div>
             <div>
@@ -36,7 +36,6 @@ export class AppComponent {
     visibleDatabase = 0;
     currentValue;
     currentKey;
-    currentDatabase = 0;
     textAreaValue;
     start;
     end;
@@ -66,13 +65,13 @@ export class AppComponent {
     }
 
     delete(key) {
-        this.http.post('/removeRedisKey', {keys: [key]}).subscribe(()=>{
-            this.fetchDb(this.currentDatabase);
+        this.http.post('/removeRedisKey', {keys: [key], db: this.visibleDatabase}).subscribe(()=>{
+            this.fetchDb(this.visibleDatabase);
         });
     }
 
     deleteAll() {
-        let keys = this.databases[this.currentDatabase].slice(this.start, this.end+1);
+        let keys = this.databases[this.visibleDatabase].slice(this.start, this.end+1);
         this.http.post('/removeRedisKey', {keys: keys}).subscribe(()=>{
             this.fetch();
         });
@@ -83,7 +82,7 @@ export class AppComponent {
             this.checkSelection(key, db);
         }
         this.currentKey = key;
-        this.currentDatabase = db;
+        this.visibleDatabase = db;
         this.http.post('/getRedisValue', {key: key, db: db}).subscribe((data)=>{
             this.currentValue = data.json().result;
         });

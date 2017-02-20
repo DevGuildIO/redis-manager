@@ -73,8 +73,10 @@ class RedisClient {
         let keys = req.body.keys;
         let currentDb = req.body.db || db;
         let currentClient = redis.createClient(port, host, {db:currentDb});
-        currentClient.del(keys);
-        res.sendStatus(200);
+        currentClient.del(keys, (err, result)=>{
+            res.sendStatus(200);
+            currentClient.quit();
+        });
     }
 }
 
