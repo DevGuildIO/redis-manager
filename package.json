@@ -1,6 +1,6 @@
 {
   "name": "Redis-Manager",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha",
   "description": "Redis Manager",
   "scripts": {
     "start": "node app.js"
