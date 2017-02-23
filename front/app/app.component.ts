@@ -8,7 +8,7 @@ import { Http } from '@angular/http';
             <div class="row">
                 <div class="col-6">
                     <div *ngFor="let database of databaseKeys; let i = index;">
-                        <span (click)="toggle(i)">{{i}} [{{databases[database].length}}]</span>
+                        <span (click)="toggle(i)">{{i}} [{{databases[database].length}}]</span> <button (click)="fetchDb(i)">Refresh</button>
                         <div *ngIf="visibleDatabase === i">
                             <div *ngFor="let key of databases[database]">
                                 <div class="key-row">
