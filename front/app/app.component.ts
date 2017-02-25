@@ -72,7 +72,7 @@ export class AppComponent {
 
     deleteAll() {
         let keys = this.databases[this.visibleDatabase].slice(this.start, this.end+1);
-        this.http.post('/removeRedisKey', {keys: keys}).subscribe(()=>{
+        this.http.post('/removeRedisKey', {keys: keys, db:this.visibleDatabase}).subscribe(()=>{
             this.fetch();
         });
     }

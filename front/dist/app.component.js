@@ -45,7 +45,7 @@ var AppComponent = (function () {
     AppComponent.prototype.deleteAll = function () {
         var _this = this;
         var keys = this.databases[this.visibleDatabase].slice(this.start, this.end + 1);
-        this.http.post('/removeRedisKey', { keys: keys }).subscribe(function () {
+        this.http.post('/removeRedisKey', { keys: keys, db: this.visibleDatabase }).subscribe(function () {
             _this.fetch();
         });
     };
