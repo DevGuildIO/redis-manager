@@ -19,7 +19,7 @@ var ValueSection = (function () {
     }
     ValueSection.prototype.set = function (key, value, db) {
         var _this = this;
-        value = JSON.stringify(value);
+        value = JSON.stringify(value, null, 4);
         this.http.post('/setRedisValue', { key: key, value: value, db: db }).subscribe(function (data) {
             if (key === 'newKey')
                 _this.newKey = '';

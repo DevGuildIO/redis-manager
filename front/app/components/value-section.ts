@@ -42,12 +42,13 @@ export class ValueSection {
     textAreaValue;
     newKey;
     newKeyDB = 0;
+    jsonValue;
     constructor(private http: Http) {
-
+        
     }
 
     set(key, value, db) {
-        value = JSON.stringify(value);
+        value = JSON.stringify(value, null, 4);
         this.http.post('/setRedisValue', {key: key, value: value, db: db}).subscribe((data)=>{
             if(key === 'newKey') this.newKey = '';
             this.keyOrValueChange.emit(db);

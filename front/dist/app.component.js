@@ -57,6 +57,7 @@ var AppComponent = (function () {
         this.currentKey = key;
         this.visibleDatabase = db;
         this.http.post('/getRedisValue', { key: key, db: db }).subscribe(function (data) {
+            var result = data.json().result;
             _this.currentValue = data.json().result;
         });
     };

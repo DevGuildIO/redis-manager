@@ -51,7 +51,6 @@ class RedisClient {
 
     set(req, res) {
         let key = req.body.key;
-        let value = JSON.parse(req.body.value) || 'false';
         let currentDb = req.body.db || db;
         let currentClient = redis.createClient(port, host, {db:currentDb});
         currentClient.set(key, value);

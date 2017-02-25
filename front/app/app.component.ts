@@ -84,7 +84,8 @@ export class AppComponent {
         this.currentKey = key;
         this.visibleDatabase = db;
         this.http.post('/getRedisValue', {key: key, db: db}).subscribe((data)=>{
-            this.currentValue = data.json().result;
+            let result = data.json().result;
+            this.currentValue =  data.json().result;
         });
     }
 
