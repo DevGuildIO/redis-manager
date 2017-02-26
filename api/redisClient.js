@@ -52,6 +52,7 @@ class RedisClient {
     set(req, res) {
         let key = req.body.key;
         let currentDb = req.body.db || db;
+        let value = JSON.parse(req.body.value) || 'false';
         let currentClient = redis.createClient(port, host, {db:currentDb});
         currentClient.set(key, value);
         currentClient.quit();
@@ -63,7 +64,13 @@ class RedisClient {
         let currentDb = req.body.db || db;
         let currentClient = redis.createClient(port, host, {db:currentDb});
         currentClient.get(key, (err, result)=>{
-            res.send({result: result});
+            let value;
+            try {
+                value = JSON.parse(result);
+            } catch(e) {
+                value = result;
+            }
+            res.send({result: value});
             currentClient.quit();
         });
     }
