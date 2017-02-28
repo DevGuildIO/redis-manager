@@ -26,7 +26,7 @@ import { Http } from '@angular/http';
 		<div class="row">
             <label>Key:</label>
             <p>{{currentKey}}</p>
-			<textarea rows="10" cols="40" value="{{currentValue}}" (change)="textAreaChange($event, 'changeValue')"></textarea>
+			<textarea rows="30" cols="80" value="{{currentValue}}" (change)="textAreaChange($event, 'changeValue')"></textarea>
 		</div>
 		<div>
 			<button style="float: right;" type="button" class="btn btn-primary" (click)="set(currentKey, changeValue, currentDatabase)">Save</button>
