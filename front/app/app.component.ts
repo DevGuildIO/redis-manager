@@ -7,8 +7,11 @@ import { Http } from '@angular/http';
         <div class="container">
             <div class="row">
                 <div class="col-6">
+                    <span>Databases:</span>
                     <div *ngFor="let database of databaseKeys; let i = index;">
-                        <span (click)="toggle(i)">{{i}} [{{databases[database].length}}]</span> <button (click)="fetchDb(i)">Refresh</button>
+                        <span (click)="toggle(i)">{{i}} [{{databases[database].length}}]</span> 
+                        <button (click)="fetchDb(i)">Refresh</button>
+                        <button *ngIf="databases[database].length > 0" type="button" class="btn btn-danger" (click)="deleteSelection(0, databases[database].length-1, database)">Flush DB</button>
                         <div *ngIf="visibleDatabase === i">
                             <div *ngFor="let key of databases[database]; let j = index;">
                                 <div class="key-row" [class.selected]="j <= end && j >= start">
@@ -24,11 +27,11 @@ import { Http } from '@angular/http';
                 </div>
             </div>
             <div>
-                <button type="button" class="btn btn-danger" (click)="deleteSelection()">Delete Selected</button>
+                <button type="button" class="btn btn-danger" (click)="deleteSelection(start, end, visibleDatabase)">Delete Selected</button>
             </div>
         </div>
     `,
-    styles: ['.row, .key-row { padding-top: 5px; }', '.selected {background-color: grey}']
+    styles: ['.row, .key-row { padding-top: 5px; }', '.selected {background-color: #C0C0C0}', '#value-section { position: fixed; top: 0px; left: 50%;}']
 })
 export class AppComponent {
     databases: Object;
@@ -86,11 +89,13 @@ export class AppComponent {
     }
 
     /**
-     * Deletes the selection fo keys from the current database
+     * Deletes the selection of keys from the current database
      */
-    deleteSelection() {
-        let keys = this.databases[this.visibleDatabase].slice(this.start, this.end+1);
-        this.http.post('/removeRedisKey', {keys: keys, db:this.visibleDatabase}).subscribe(()=>{
+    deleteSelection(start, end, db) {
+        let keys = this.databases[db].slice(start, end+1);
+        this.http.post('/removeRedisKey', {keys: keys, db:db}).subscribe(()=>{
+            this.start = undefined;
+            this.end = undefined;
             this.fetch();
         });
     }
