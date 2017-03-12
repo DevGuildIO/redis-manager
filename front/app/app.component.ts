@@ -10,8 +10,8 @@ import { Http } from '@angular/http';
                     <div *ngFor="let database of databaseKeys; let i = index;">
                         <span (click)="toggle(i)">{{i}} [{{databases[database].length}}]</span> <button (click)="fetchDb(i)">Refresh</button>
                         <div *ngIf="visibleDatabase === i">
-                            <div *ngFor="let key of databases[database]">
-                                <div class="key-row">
+                            <div *ngFor="let key of databases[database]; let j = index;">
+                                <div class="key-row" [class.selected]="j <= end && j >= start">
                                     <button (click)="get(key, i, $event)" type="button" class="btn btn-link">{{key}}</button>
                                     <button style="float: right;" type="button" class="btn btn-danger" (click)="delete(key)">Delete</button>
                                 </div>
@@ -19,7 +19,7 @@ import { Http } from '@angular/http';
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-6" id="value-section">
                     <value-section [currentValue]="currentValue" [currentKey]="currentKey" [currentDatabase]="visibleDatabase" [databaseKeys]="databaseKeys" (keyOrValueChange)="fetchDb($event)"></value-section>
                 </div>
             </div>
@@ -28,7 +28,7 @@ import { Http } from '@angular/http';
             </div>
         </div>
     `,
-    styles: ['.row, .key-row { padding-top: 5px; }']
+    styles: ['.row, .key-row { padding-top: 5px; }', '.selected {background-color: grey}']
 })
 export class AppComponent {
     databases: Object;

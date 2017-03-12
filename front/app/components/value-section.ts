@@ -31,7 +31,8 @@ import { Http } from '@angular/http';
 		<div>
 			<button style="float: right;" type="button" class="btn btn-primary" (click)="set(currentKey, changeValue, currentDatabase)">Save</button>
 		</div>
-	`
+	`,
+    styles:['#value-section: position: fixed; top: 0px; left: 50%;']
 })
 export class ValueSection {
 	@Input('databaseKeys') databaseKeys;
